@@ -138,6 +138,7 @@ pipeline {
                             docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-creds') {
                                 docker.image("${DOCKER_HUB_REPO}:${tag}").push()
                                 docker.image("${DOCKER_HUB_REPO}:${latestTag}").push()
+
                             }
                         }
                     }
