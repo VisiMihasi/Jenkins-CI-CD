@@ -17,6 +17,7 @@ pipeline {
                       git branch: branchName, credentialsId: 'github-creds', url: 'https://github.com/VisiMihasi/Jenkins-CI-CD.git'
                   }
               }
+
           }
         stage('Build Jar') {
             when {
