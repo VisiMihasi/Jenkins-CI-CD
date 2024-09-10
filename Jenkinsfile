@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Use GitHub credentials to check out the code
+
                 git branch: 'main', credentialsId: 'github-creds', url: 'https://github.com/VisiMihasi/Jenkins-CI-CD.git'
             }
         }
@@ -19,7 +19,7 @@ pipeline {
             }
         }
 
-        // Dev Environment Stages
+
         stage('Build Docker Image for Dev') {
             steps {
                 script {
@@ -40,7 +40,7 @@ pipeline {
             }
         }
 
-        // Test Environment Stages
+
         stage('Build Docker Image for Test') {
             steps {
                 script {
@@ -61,29 +61,41 @@ pipeline {
             }
         }
 
-        // Full Deployment Pipeline for Main Branch
+
         stage('Build Docker Image for Production') {
             steps {
                 script {
                     def tag = "v${env.BUILD_NUMBER}-prod"
                     docker.build("${DOCKER_HUB_REPO}:${tag}")
-                    docker.build("${DOCKER_HUB_REPO}:latest-prod")
                 }
             }
         }
 
-        stage('Deploy to Production') {
-            steps {
-                input message: 'Approve deployment to Production?'
-                ok: 'Approve'
-                script {
-                    def tag = "v${env.BUILD_NUMBER}-prod"
-                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-creds') {
-                        docker.image("${DOCKER_HUB_REPO}:${tag}").push()
-                        docker.image("${DOCKER_HUB_REPO}:latest-prod").push()
-                    }
-                }
-            }
-        }
+       stage('Deploy to Production') {
+           steps {
+               script {
+
+                   def approver = input message: 'Approve deployment to Production?', ok: 'Approve',
+                       submitter: 'admin', // This restricts who can approve
+                       parameters: [string(name: 'approver', description: 'Enter your Jenkins username')]
+
+                   // Check if the approver matches the allowed user
+                   if (approver == 'admin') {
+                       echo "Deployment approved by: ${approver}"
+                   } else {
+                       error("Only 'admin' can approve this step.")
+                   }
+               }
+
+
+               script {
+                   def tag = "v${env.BUILD_NUMBER}-prod"
+                   docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-creds') {
+                       docker.image("${DOCKER_HUB_REPO}:${tag}").push()
+                       docker.image("${DOCKER_HUB_REPO}:latest-prod").push()
+                   }
+               }
+           }
+       }
     }
 }
