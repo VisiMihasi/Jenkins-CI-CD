@@ -8,6 +8,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
+
+                        echo "Branch name: ${env.BRANCH_NAME}"
                 git branch: '${env.BRANCH_NAME}', credentialsId: 'github-creds', url: 'https://github.com/VisiMihasi/Jenkins-CI-CD.git'
             }
         }
