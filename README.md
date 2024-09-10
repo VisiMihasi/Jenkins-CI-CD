@@ -85,5 +85,6 @@ The pipeline is structured to run the following stages:
 
 ## Notes
 
+
 - The pipeline is configured to build, tag, and push Docker images with versioning like `v1-dev`, `v1-test`, and `v1-prod`.
 - Ensure you have appropriate permissions set up for approval steps in Jenkins.
