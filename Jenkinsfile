@@ -74,7 +74,8 @@ pipeline {
 
         stage('Deploy to Production') {
             steps {
-                input message: 'Approve deployment to Production?', ok: 'Approve'
+                input message: 'Approve deployment to Production?'
+                ok: 'Approve'
                 script {
                     def tag = "v${env.BUILD_NUMBER}-prod"
                     docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-creds') {
