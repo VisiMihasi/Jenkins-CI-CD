@@ -6,14 +6,18 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
+          stage('Checkout') {
+              steps {
+                  script {
+                      // Use a variable for branch name
+                      def branchName = env.BRANCH_NAME ?: 'main' // fallback to main if BRANCH_NAME is not found
+                      echo "Branch name: ${branchName}"
 
-                        echo "Branch name: ${env.BRANCH_NAME}"
-                git branch: '${env.BRANCH_NAME}', credentialsId: 'github-creds', url: 'https://github.com/VisiMihasi/Jenkins-CI-CD.git'
-            }
-        }
-
+                      // Git checkout with the correct branch
+                      git branch: branchName, credentialsId: 'github-creds', url: 'https://github.com/VisiMihasi/Jenkins-CI-CD.git'
+                  }
+              }
+          }
         stage('Build Jar') {
             when {
                 anyOf {
